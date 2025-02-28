@@ -1,0 +1,67 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      DB_NAME: demo
+      DB_USER: demo
+      DB_PASSWORD: demo
+      DB_HOST: postgres
+      DB_PORT: 5432
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
+    ports: ["8080:80"]
+    volumes:
+      - ./src:/app/src
+
+  create-migration:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      DB_NAME: demo
+      DB_USER: demo
+      DB_PASSWORD: demo
+      DB_HOST: postgres
+      DB_PORT: 5432
+    command: >
+      sh -c  "alembic -c alembic/alembic.ini revision --autogenerate -m \"${MIGRATION_MESSAGE}\""
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./alembic:/app/alembic
+
+  migration:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      DB_NAME: demo
+      DB_USER: demo
+      DB_PASSWORD: demo
+      DB_HOST: postgres
+      DB_PORT: 5432
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c  "alembic -c alembic/alembic.ini upgrade head"
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: demo
+    ports: ["5432:5432"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

@@ -1,0 +1,71 @@
+[tool.poetry]
+name = "ready-4-prod-fastapi-app"
+version = "1.0.0"
+description = "FastAPI app template that uses Pydantic, SQLAlchemy and Strawberry."
+authors = ["Matheus Tosta <me@mtosta.dev>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+strawberry-graphql = {extras = ["fastapi"], version = "^0.260.2"}
+pydantic-settings = "^2.8.0"
+loguru = "^0.7.3"
+python-dotenv = "^1.0.1"
+sqlalchemy = "^2.0.38"
+toml = "^0.10.2"
+pendulum = "^3.0.0"
+psycopg2 = "^2.9.10"
+alembic = "^1.14.1"
+uvicorn = "^0.34.0"
+uvicorn-worker = "^0.3.0"
+asyncpg = "^0.30.0"
+
+
+[tool.coverage.report]
+show_missing = true
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+ruff = "^0.9.7"
+mypy = "^1.15.0"
+pytest-cov = "^6.0.0"
+pytest-env = "^1.1.5"
+pytest-aio = "^1.9.0"
+alembic = "^1.14.1"
+testcontainers = "^4.9.1"
+asgi-lifespan = "^2.1.0"
+httpx = "^0.28.1"
+types-toml = "^0.10.8.20240310"
+
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["__pycache__", "*.egg_info"]
+
+
+[tool.ruff.lint]
+fixable = ["ALL"]
+select = ["E", "W", "F", "C", "N", "D", "I001", "I"]
+ignore = ["D213", "D404", "D203", "D413"]
+
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = [
+    "-v",
+    "--cov=src"
+]
+testpaths = ["tests"]
+
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+strict = true
+follow_imports = "silent"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
